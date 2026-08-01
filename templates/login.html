@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BuddyConnect Login</title>
+</head>
+<body>
+
+<h2>BuddyConnect Login</h2>
+
+<input type="text" id="username" placeholder="Username"><br><br>
+
+<input type="password" id="password" placeholder="Password"><br><br>
+
+<button onclick="login()">Login</button>
+
+<p id="msg"></p>
+
+<script>
+async function login() {
+
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const response = await fetch("/api/token/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+        localStorage.setItem("access", data.access);
+        window.location.href = "/api/profile-page/";
+    } else {
+        document.getElementById("msg").innerHTML = "Invalid Username or Password";
+    }
+}
+</script>
+
+</body>
+</html>
