@@ -1,13 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Profile</title>
+    <title>BuddyConnect Profile</title>
 </head>
 <body>
 
-<h1>Welcome to BuddyConnect</h1>
+<h1>BuddyConnect Profile</h1>
 
-<p>Login Successful ✅</p>
+<img id="profileImage" src="" width="150" height="150">
+
+<br><br>
+
+Username:
+<input type="text" id="username"><br><br>
+
+Email:
+<input type="email" id="email"><br><br>
+
+Phone:
+<input type="text" id="phone"><br><br>
+
+City:
+<input type="text" id="city"><br><br>
+
+<br><br>
+
+Profile Picture:
+<input type="file" id="profile_picture">
+
+<br><br>
+
+<button onclick="updateProfile()">Save Profile</button>
+
+<button onclick="loadProfile()">Load Profile</button>
+
+<p id="message"></p>
+
+<script>
+
+const token = localStorage.getItem("access");
+
+async function loadProfile(){
+
+    const response = await fetch("/api/profile/",{
+
+        headers:{
+            "Authorization":"Bearer "+token
+        }
+
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+
+    document.getElementById("username").value=data.username;
+    document.getElementById("email").value=data.email;
+    document.getElementById("phone").value=data.phone;
+    document.getElementById("city").value=data.city;
+
+    if(data.profile_picture){
+
+        document.getElementById("profileImage").src=data.profile_picture;
+
+    }
+
+}
+
+async function updateProfile(){
+
+    const token = localStorage.getItem("access");
+
+    const formData = new FormData();
+
+    formData.append("username", document.getElementById("username").value);
+    formData.append("email", document.getElementById("email").value);
+    formData.append("phone", document.getElementById("phone").value);
+    formData.append("city", document.getElementById("city").value);
+
+    const image = document.getElementById("profile_picture").files[0];
+
+    if(image){
+        formData.append("profile_picture", image);
+    }
+
+    const response = await fetch("/api/profile/",{
+
+        method:"PUT",
+
+        headers:{
+            "Authorization":"Bearer "+token
+        },
+
+        body:formData
+
+    });
+
+    if(response.ok){
+
+        document.getElementById("message").innerHTML="✅ Profile Updated Successfully";
+
+        loadProfile();
+
+    }else{
+
+        document.getElementById("message").innerHTML="❌ Update Failed";
+
+    }
+
+}
+
+</script>
 
 </body>
 </html>

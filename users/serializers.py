@@ -10,7 +10,6 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'email',
-            'password',
             'phone',
             'city',
             'profile_picture'
