@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BuddyConnect Dashboard</title>
+</head>
+<body>
+
+<h1>🏠 BuddyConnect Dashboard</h1>
+
+<hr>
+
+<h2>Welcome <span id="username"></span></h2>
+
+<img id="profileImage" width="150">
+
+<p>Email: <span id="email"></span></p>
+
+<p>Phone: <span id="phone"></span></p>
+
+<p>City: <span id="city"></span></p>
+
+<br>
+
+<button onclick="window.location='/api/profile-page/'">
+Edit Profile
+</button>
+
+<button onclick="logout()">
+Logout
+</button>
+
+<script>
+
+const token = localStorage.getItem("access");
+
+async function loadProfile(){
+
+const response = await fetch("/api/profile/",{
+headers:{
+Authorization:"Bearer "+token
+}
+});
+
+const data = await response.json();
+
+document.getElementById("username").innerHTML=data.username;
+document.getElementById("email").innerHTML=data.email;
+document.getElementById("phone").innerHTML=data.phone;
+document.getElementById("city").innerHTML=data.city;
+
+if(data.profile_picture){
+document.getElementById("profileImage").src=data.profile_picture;
+}
+
+}
+
+loadProfile();
+console.log("Token =", token);
+
+fetch("/api/profile/", {
+    method: "GET",
+    headers: {
+        "Authorization": "Bearer " + token
+    }
+})
+.then(res => {
+    console.log("Status =", res.status);
+    return res.json();
+})
+.then(data => {
+    console.log(data);
+});
+
+function logout(){
+localStorage.removeItem("access");
+window.location="/api/login-page/";
+}
+
+</script>
+
+</body>
+</html>

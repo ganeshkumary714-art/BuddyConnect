@@ -36,7 +36,7 @@ async function login() {
 
     if (response.ok) {
         localStorage.setItem("access", data.access);
-        window.location.href = "/api/profile-page/";
+        window.location.href="/api/dashboard/";
     } else {
         document.getElementById("msg").innerHTML = "Invalid Username or Password";
     }

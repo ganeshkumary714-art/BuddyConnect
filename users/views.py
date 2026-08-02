@@ -23,3 +23,6 @@ def login_page(request):
 
 def profile_page(request):
     return render(request, "profile.html")
+
+def dashboard_page(request):
+    return render(request, "dashboard.html")

@@ -4,6 +4,7 @@ from .views import (
     ProfileView,
     login_page,
     profile_page,
+    dashboard_page,
 )
 
 urlpatterns = [
@@ -14,4 +15,5 @@ urlpatterns = [
     # HTML Pages
     path('login-page/', login_page, name='login_page'),
     path('profile-page/', profile_page, name='profile_page'),
+    path("dashboard/", dashboard_page, name="dashboard"),
 ]
