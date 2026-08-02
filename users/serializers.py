@@ -34,3 +34,14 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+    
+from .models import FriendRequest
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+
+    sender = UserSerializer(read_only=True)
+    receiver = UserSerializer(read_only=True)
+
+    class Meta:
+        model = FriendRequest
+        fields = "__all__"
