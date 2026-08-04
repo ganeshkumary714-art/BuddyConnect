@@ -1,82 +1,268 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>BuddyConnect Dashboard</title>
 </head>
+
 <body>
 
-<h1>🏠 BuddyConnect Dashboard</h1>
+    <h1>🏠 BuddyConnect Dashboard</h1>
 
-<hr>
+    <hr>
 
-<h2>Welcome <span id="username"></span></h2>
+    <h2>Welcome <span id="username"></span></h2>
 
-<img id="profileImage" width="150">
+    <img id="profileImage" width="150">
 
-<p>Email: <span id="email"></span></p>
+    <p>Email: <span id="email"></span></p>
+    <p>Phone: <span id="phone"></span></p>
+    <p>City: <span id="city"></span></p>
 
-<p>Phone: <span id="phone"></span></p>
+    <br>
 
-<p>City: <span id="city"></span></p>
+    <button onclick="window.location='/api/profile-page/'">
+        Edit Profile
+    </button>
 
-<br>
+    <button onclick="logout()">
+        Logout
+    </button>
 
-<button onclick="window.location='/api/profile-page/'">
-Edit Profile
-</button>
+    <hr>
 
-<button onclick="logout()">
-Logout
-</button>
+    <h2>👥 My Friends</h2>
 
-<script>
+    <div id="friendsList"></div>
 
-const token = localStorage.getItem("access");
+    <hr>
 
-async function loadProfile(){
+    <h2>Friend Requests</h2>
 
-const response = await fetch("/api/profile/",{
-headers:{
-Authorization:"Bearer "+token
-}
-});
+    <div id="friendRequests"></div>
 
-const data = await response.json();
+    <hr>
 
-document.getElementById("username").innerHTML=data.username;
-document.getElementById("email").innerHTML=data.email;
-document.getElementById("phone").innerHTML=data.phone;
-document.getElementById("city").innerHTML=data.city;
+    <h2>All Users</h2>
 
-if(data.profile_picture){
-document.getElementById("profileImage").src=data.profile_picture;
-}
+    <div id="usersList"></div>
 
-}
+    <script>
 
-loadProfile();
-console.log("Token =", token);
+        const token = localStorage.getItem("access");
 
-fetch("/api/profile/", {
-    method: "GET",
-    headers: {
-        "Authorization": "Bearer " + token
-    }
-})
-.then(res => {
-    console.log("Status =", res.status);
-    return res.json();
-})
-.then(data => {
-    console.log(data);
-});
+        async function loadProfile() {
 
-function logout(){
-localStorage.removeItem("access");
-window.location="/api/login-page/";
-}
+            const response = await fetch("/api/profile/", {
+                headers: {
+                    Authorization: "Bearer " + token
+                }
+            });
 
-</script>
+            const data = await response.json();
+
+            document.getElementById("username").innerHTML = data.username;
+            document.getElementById("email").innerHTML = data.email;
+            document.getElementById("phone").innerHTML = data.phone;
+            document.getElementById("city").innerHTML = data.city;
+
+            if (data.profile_picture) {
+                document.getElementById("profileImage").src = data.profile_picture;
+            }
+
+        }
+
+        async function loadUsers() {
+
+            const response = await fetch("/api/users/", {
+                headers: {
+                    Authorization: "Bearer " + token
+                }
+            });
+
+            const users = await response.json();
+
+            let html = "";
+
+            users.forEach(user => {
+
+                html += `
+        <div style="border:1px solid gray;padding:10px;margin:10px;">
+
+            <h3>${user.username}</h3>
+
+            <p>${user.city}</p>
+
+            <button onclick="sendRequest(${user.id})">
+                Add Friend
+            </button>
+
+        </div>
+        `;
+
+            });
+
+            document.getElementById("usersList").innerHTML = html;
+
+        }
+
+        async function sendRequest(receiverId) {
+
+            const response = await fetch("/api/friend-request/", {
+
+                method: "POST",
+
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    receiver: receiverId
+                })
+
+            });
+
+            if (response.ok) {
+
+                alert("✅ Friend Request Sent");
+
+                loadFriendRequests();
+                loadFriends();
+
+            }
+            else {
+
+                alert("❌ Request Failed");
+
+            }
+
+        }
+
+        async function loadFriendRequests() {
+
+            const response = await fetch("/api/friend-requests/", {
+
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+
+            });
+
+            const requests = await response.json();
+
+            console.log(requests);
+
+            let html = "";
+
+            requests.forEach(request => {
+
+                html += `
+        <div style="border:1px solid green;padding:10px;margin:10px;">
+
+            <h3>${request.sender.username}</h3>
+
+            <button onclick="acceptRequest(${request.id})">
+                Accept
+            </button>
+
+        </div>
+        `;
+
+            });
+
+            document.getElementById("friendRequests").innerHTML = html;
+
+        }
+
+        async function acceptRequest(id) {
+
+            const response = await fetch(`/api/friend-request/${id}/accept/`, {
+
+                method: "PUT",
+
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+
+            });
+
+            if (response.ok) {
+
+                alert("✅ Friend Request Accepted");
+
+                loadFriendRequests();
+                loadFriends();
+
+            } else {
+
+                alert("❌ Failed");
+
+            }
+
+        }
+
+        function logout() {
+
+            localStorage.removeItem("access");
+
+            window.location = "/api/login-page/";
+
+        }
+
+        loadProfile();
+        loadUsers();
+        loadFriendRequests();
+        loadFriends();
+
+        async function loadFriends() {
+
+            const response = await fetch("/api/friends/", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const friends = await response.json();
+
+            let html = "";
+
+            friends.forEach(friend => {
+
+                let user;
+
+                if (friend.sender.username == document.getElementById("username").innerHTML) {
+                    user = friend.receiver;
+                } else {
+                    user = friend.sender;
+                }
+
+                html += `
+        <div style="border:1px solid blue;padding:10px;margin:10px;border-radius:8px;">
+
+            <img src="${user.profile_picture}" width="80" height="80">
+
+            <h3>${user.username}</h3>
+
+            <p>${user.email}</p>
+
+            <p>${user.city}</p>
+
+            <button onclick="window.location='/api/chat/?user=${user.id}'">
+                Chat
+            </button>
+
+        </div>
+        `;
+
+            });
+
+            document.getElementById("friendsList").innerHTML = html;
+
+        }
+
+    </script>
 
 </body>
+
 </html>

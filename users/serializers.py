@@ -45,3 +45,14 @@ class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FriendRequest
         fields = "__all__"
+
+from .models import Message
+
+class MessageSerializer(serializers.ModelSerializer):
+
+    sender = UserSerializer(read_only=True)
+    receiver = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Message
+        fields = "__all__"
