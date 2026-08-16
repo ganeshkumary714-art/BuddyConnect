@@ -1,4 +1,6 @@
 from django.urls import path
+from .views import like_user
+from .views import discover_page
 from .views import (
     UserCreateView,
     ProfileView,
@@ -13,6 +15,8 @@ from .views import (
     MessageCreateView,
     MessageListView,
     chat_page,
+    UnreadMessageView,
+    discover_page,
 )
 
 urlpatterns = [
@@ -26,6 +30,7 @@ urlpatterns = [
     path("profile-page/", profile_page, name="profile_page"),
     path("dashboard/", dashboard_page, name="dashboard"),
     path("chat/", chat_page, name="chat"),
+    path("discover/", discover_page, name="discover"),
 
     # Friend Request
     path("friend-request/", FriendRequestCreateView.as_view(), name="friend_request"),
@@ -39,5 +44,8 @@ urlpatterns = [
     # Chat
     path("messages/", MessageCreateView.as_view(), name="send_message"),
     path("messages/<int:user_id>/", MessageListView.as_view(), name="chat_history"),
+    path("unread-messages/", UnreadMessageView.as_view(), name="unread_messages"),
 
+    #like
+    path("like/<int:user_id>/", like_user, name="like-user"),
 ]

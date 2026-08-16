@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BuddyConnect - Discover</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* Navbar */
+
+        .navbar {
+            height: 65px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff385c;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            border: none;
+            background: #f1f1f1;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* Main */
+
+        .container {
+            max-width: 450px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title h2 {
+            margin-bottom: 5px;
+        }
+
+        .title p {
+            color: #777;
+        }
+
+        /* Profile Card */
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+        }
+
+        .profile-photo {
+            width: 100%;
+            height: 430px;
+            object-fit: cover;
+            background: #ddd;
+        }
+
+        .profile-info {
+            padding: 20px;
+        }
+
+        .profile-name {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .location {
+            color: #777;
+            margin-bottom: 15px;
+        }
+
+        .about {
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* Buttons */
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .action-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+
+        .pass {
+            background: white;
+            color: #ff4d4d;
+        }
+
+        .like {
+            background: #ff385c;
+            color: white;
+        }
+
+        .super {
+            background: #ffd700;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.08);
+        }
+
+        /* Bottom Navigation */
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+
+        .bottom-item {
+            border: none;
+            background: none;
+            font-size: 14px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .bottom-item span {
+            display: block;
+            font-size: 22px;
+            margin-bottom: 3px;
+        }
+
+        /* Match popup */
+
+        .match-popup {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .match-box {
+            background: white;
+            width: 330px;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .match-box h1 {
+            color: #ff385c;
+        }
+
+        .match-box button {
+            border: none;
+            background: #ff385c;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>❤️ Discover</h1>
+
+    <p>Find someone you would like to connect with.</p>
+
+    <!-- NAVBAR -->
+
+    <div class="navbar">
+
+        <div class="logo">
+            ❤️ BuddyConnect
+        </div>
+
+        <div class="nav-buttons">
+
+            <button class="nav-btn" onclick="openProfile()">
+                👤 Profile
+            </button>
+
+            <button class="nav-btn" onclick="logout()">
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="container">
+
+        <div class="title">
+
+            <h2>Discover</h2>
+
+            <p>Find someone you connect with</p>
+
+        </div>
+
+
+        <!-- PROFILE CARD -->
+
+        <div class="profile-card">
+
+            <img
+                id="profilePhoto"
+                class="profile-photo"
+                src=""
+                alt="Profile"
+            >
+
+            <div class="profile-info">
+
+                <div
+                    id="profileName"
+                    class="profile-name">
+                    Loading...
+                </div>
+
+                <div
+                    id="profileLocation"
+                    class="location">
+                    📍 Loading...
+                </div>
+
+                <div
+                    id="profileAbout"
+                    class="about">
+                    Loading profile...
+                </div>
+
+            </div>
+
+
+            <!-- ACTION BUTTONS -->
+
+            <div class="actions">
+
+                <button
+                    class="action-btn pass"
+                    onclick="passUser()">
+                    ❌
+                </button>
+
+                <button
+                    class="action-btn super"
+                    onclick="superLike()">
+                    ⭐
+                </button>
+
+                <button
+                    class="action-btn like"
+                    onclick="likeUser()">
+                    ❤️
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BOTTOM NAVIGATION -->
+
+    <div class="bottom-nav">
+
+        <button
+            class="bottom-item"
+            onclick="location.reload()">
+
+            <span>🔥</span>
+            Discover
+
+        </button>
+
+
+        <button
+            class="bottom-item"
+            onclick="openChats()">
+
+            <span>💬</span>
+            Chats
+
+        </button>
+
+
+        <button
+            class="bottom-item"
+            onclick="openProfile()">
+
+            <span>👤</span>
+            Profile
+
+        </button>
+
+    </div>
+
+
+    <!-- MATCH POPUP -->
+
+    <div
+        id="matchPopup"
+        class="match-popup">
+
+        <div class="match-box">
+
+            <h1>🎉 It's a Match!</h1>
+
+            <p>
+                You and
+                <b id="matchName"></b>
+                liked each other.
+            </p>
+
+            <button onclick="closeMatch()">
+                Continue
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const token =
+            localStorage.getItem("access");
+
+
+        let users = [];
+
+        let currentIndex = 0;
+
+
+        /*
+        ====================================
+        LOAD USERS
+        ====================================
+        */
+
+        async function loadUsers() {
+
+            const response =
+                await fetch("/api/users/", {
+
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+
+                });
+
+
+            if (!response.ok) {
+
+                console.log(
+                    "Unable to load users"
+                );
+
+                return;
+
+            }
+
+
+            users =
+                await response.json();
+
+
+            /*
+            Empty users check
+            */
+
+            if (!users.length) {
+
+                document.getElementById(
+                    "profileName"
+                ).innerText =
+                    "No users available";
+
+                return;
+
+            }
+
+
+            showProfile();
+
+        }
+
+
+        /*
+        ====================================
+        SHOW PROFILE
+        ====================================
+        */
+
+        function showProfile() {
+
+            if (
+                currentIndex >= users.length
+            ) {
+
+                document.getElementById(
+                    "profileName"
+                ).innerText =
+                    "No more profiles";
+
+                document.getElementById(
+                    "profileLocation"
+                ).innerText =
+                    "Come back later ❤️";
+
+                document.getElementById(
+                    "profileAbout"
+                ).innerText =
+                    "";
+
+                document.getElementById(
+                    "profilePhoto"
+                ).style.display =
+                    "none";
+
+                return;
+
+            }
+
+
+            const user =
+                users[currentIndex];
+
+
+            document.getElementById(
+                "profileName"
+            ).innerText =
+                user.username;
+
+
+            document.getElementById(
+                "profileLocation"
+            ).innerText =
+                "📍 " +
+                (user.city || "Unknown");
+
+
+            document.getElementById(
+                "profileAbout"
+            ).innerText =
+                user.bio ||
+                "No bio available";
+
+
+            if (user.profile_picture) {
+
+                document.getElementById(
+                    "profilePhoto"
+                ).src =
+                    user.profile_picture;
+
+                document.getElementById(
+                    "profilePhoto"
+                ).style.display =
+                    "block";
+
+            }
+
+        }
+
+
+        /*
+        ====================================
+        PASS
+        ====================================
+        */
+
+        function passUser() {
+
+            currentIndex++;
+
+            showProfile();
+
+        }
+
+
+        /*
+        ====================================
+        LIKE
+        ====================================
+        */
+
+        async function likeUser() {
+
+            const user =
+                users[currentIndex];
+
+
+            if (!user) {
+                return;
+            }
+
+
+            /*
+            For now we only move
+            to next profile.
+
+            Backend Like system
+            will be connected next.
+            */
+
+            console.log(
+                "❤️ Liked:",
+                user.username
+            );
+
+
+            currentIndex++;
+
+            showProfile();
+
+        }
+
+
+        /*
+        ====================================
+        SUPER LIKE
+        ====================================
+        */
+
+        function superLike() {
+
+            const user =
+                users[currentIndex];
+
+
+            if (!user) {
+                return;
+            }
+
+
+            console.log(
+                "⭐ Super Like:",
+                user.username
+            );
+
+
+            currentIndex++;
+
+            showProfile();
+
+        }
+
+
+        /*
+        ====================================
+        PROFILE
+        ====================================
+        */
+
+        function openProfile() {
+
+            window.location =
+                "/api/profile-page/";
+
+        }
+
+
+        /*
+        ====================================
+        CHAT
+        ====================================
+        */
+
+        function openChats() {
+
+            window.location =
+                "/api/dashboard/";
+
+        }
+
+
+        /*
+        ====================================
+        LOGOUT
+        ====================================
+        */
+
+        function logout() {
+
+            localStorage.removeItem(
+                "access"
+            );
+
+            window.location =
+                "/api/login-page/";
+
+        }
+
+
+        /*
+        ====================================
+        MATCH
+        ====================================
+        */
+
+        function showMatch(username) {
+
+            document.getElementById(
+                "matchName"
+            ).innerText =
+                username;
+
+
+            document.getElementById(
+                "matchPopup"
+            ).style.display =
+                "flex";
+
+        }
+
+
+        function closeMatch() {
+
+            document.getElementById(
+                "matchPopup"
+            ).style.display =
+                "none";
+
+        }
+
+
+        /*
+        START
+        */
+
+        loadUsers();
+
+    </script>
+
+</body>
+
+</html>
