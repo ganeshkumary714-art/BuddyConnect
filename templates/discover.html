@@ -27,7 +27,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .logo {
@@ -76,7 +76,7 @@
             background: white;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
         }
 
         .profile-photo {
@@ -122,7 +122,7 @@
             border: none;
             font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
         }
 
         .pass {
@@ -157,7 +157,7 @@
             justify-content: center;
             gap: 60px;
             align-items: center;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .bottom-item {
@@ -180,7 +180,7 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.65);
+            background: rgba(0, 0, 0, 0.65);
             align-items: center;
             justify-content: center;
             z-index: 100;
@@ -206,7 +206,6 @@
             border-radius: 25px;
             cursor: pointer;
         }
-
     </style>
 
 </head>
@@ -257,30 +256,19 @@
 
         <div class="profile-card">
 
-            <img
-                id="profilePhoto"
-                class="profile-photo"
-                src=""
-                alt="Profile"
-            >
+            <img id="profilePhoto" class="profile-photo" src="" alt="Profile">
 
             <div class="profile-info">
 
-                <div
-                    id="profileName"
-                    class="profile-name">
+                <div id="profileName" class="profile-name">
                     Loading...
                 </div>
 
-                <div
-                    id="profileLocation"
-                    class="location">
+                <div id="profileLocation" class="location">
                     📍 Loading...
                 </div>
 
-                <div
-                    id="profileAbout"
-                    class="about">
+                <div id="profileAbout" class="about">
                     Loading profile...
                 </div>
 
@@ -291,21 +279,15 @@
 
             <div class="actions">
 
-                <button
-                    class="action-btn pass"
-                    onclick="passUser()">
+                <button class="action-btn pass" onclick="passUser()">
                     ❌
                 </button>
 
-                <button
-                    class="action-btn super"
-                    onclick="superLike()">
+                <button class="action-btn super" onclick="superLike()">
                     ⭐
                 </button>
 
-                <button
-                    class="action-btn like"
-                    onclick="likeUser()">
+                <button class="action-btn like" onclick="likeUser()">
                     ❤️
                 </button>
 
@@ -320,9 +302,7 @@
 
     <div class="bottom-nav">
 
-        <button
-            class="bottom-item"
-            onclick="location.reload()">
+        <button class="bottom-item" onclick="location.reload()">
 
             <span>🔥</span>
             Discover
@@ -330,9 +310,7 @@
         </button>
 
 
-        <button
-            class="bottom-item"
-            onclick="openChats()">
+        <button class="bottom-item" onclick="openChats()">
 
             <span>💬</span>
             Chats
@@ -340,9 +318,7 @@
         </button>
 
 
-        <button
-            class="bottom-item"
-            onclick="openProfile()">
+        <button class="bottom-item" onclick="openProfile()">
 
             <span>👤</span>
             Profile
@@ -354,9 +330,7 @@
 
     <!-- MATCH POPUP -->
 
-    <div
-        id="matchPopup"
-        class="match-popup">
+    <div id="matchPopup" class="match-popup">
 
         <div class="match-box">
 
@@ -544,35 +518,57 @@
 
         async function likeUser() {
 
-            const user =
-                users[currentIndex];
-
+            const user = users[currentIndex];
 
             if (!user) {
                 return;
             }
 
+            console.log("❤️ Liked:", user.username);
 
-            /*
-            For now we only move
-            to next profile.
+            try {
 
-            Backend Like system
-            will be connected next.
-            */
+                const response = await fetch(
+                    `/api/like/${user.id}/`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Authorization": "Bearer " + token,
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
 
-            console.log(
-                "❤️ Liked:",
-                user.username
-            );
+                const data = await response.json();
 
+                console.log("Like Response:", data);
 
-            currentIndex++;
+                if (response.ok) {
 
-            showProfile();
+                    // Agar mutual like hua
+                    if (data.match === true) {
 
+                        showMatch(user.username);
+
+                    }
+
+                    currentIndex++;
+                    showProfile();
+
+                } else {
+
+                    console.log("Like failed:", data);
+
+                    alert("Unable to like this profile.");
+
+                }
+
+            } catch (error) {
+
+                console.error("Like Error:", error);
+
+            }
         }
-
 
         /*
         ====================================

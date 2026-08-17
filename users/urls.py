@@ -1,6 +1,5 @@
 from django.urls import path
-from .views import like_user
-from .views import discover_page
+
 from .views import (
     UserCreateView,
     ProfileView,
@@ -17,6 +16,10 @@ from .views import (
     chat_page,
     UnreadMessageView,
     discover_page,
+    like_user,
+    likes_received,
+    my_matches,
+    unmatch_user,
 )
 
 urlpatterns = [
@@ -48,4 +51,7 @@ urlpatterns = [
 
     #like
     path("like/<int:user_id>/", like_user, name="like-user"),
+    path("likes-received/", likes_received, name="likes-received"),
+    path("matches/", my_matches, name="my-matches"),
+    path("unmatch/<int:match_id>/", unmatch_user, name="unmatch-user"),
 ]

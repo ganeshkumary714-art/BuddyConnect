@@ -35,6 +35,16 @@
 
     <hr>
 
+    <h2>💕 My Matches</h2>
+
+    <div id="matchesList"></div>
+
+    <hr>
+
+    <h2>❤️ Who Liked You</h2>
+
+    <div id="likesReceived"></div>
+
     <h2>👥 My Friends</h2>
 
     <div id="friendsList"></div>
@@ -218,6 +228,8 @@
         loadUsers();
         loadFriendRequests();
         loadFriends();
+        loadLikesReceived();
+        loadMatches();
         testUnread();
 
         async function loadFriends() {
@@ -304,6 +316,218 @@
 
             console.log("Response:", data);
 
+        }
+
+        async function loadLikesReceived() {
+
+            const response = await fetch("/api/likes-received/", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            if (!response.ok) {
+                console.log("Cannot load likes:", response.status);
+                return;
+            }
+
+            const likes = await response.json();
+
+            console.log("❤️ Likes Received:", likes);
+
+            let html = "";
+
+            likes.forEach(like => {
+
+                const user = like.user;
+
+                html += `
+            <div style="
+                border:1px solid #ff4d6d;
+                padding:15px;
+                margin:10px;
+                border-radius:12px;
+                width:300px;
+            ">
+
+                <img
+                    src="${user.profile_picture || ''}"
+                    width="80"
+                    height="80"
+                    style="border-radius:50%;object-fit:cover;"
+                >
+
+                <h3>${user.username} ❤️</h3>
+
+                <p>${user.city}</p>
+
+                ${like.liked_back
+                        ?
+                        `<p style="color:green;">
+                        ❤️ You already liked each other
+                    </p>`
+                        :
+                        `
+                    <button onclick="likeBack(${user.id})">
+                        ❤️ Like Back
+                    </button>
+
+                    <button onclick="passLike(${like.like_id})">
+                        ❌ Pass
+                    </button>
+                    `
+                    }
+
+            </div>
+        `;
+            });
+
+            if (likes.length === 0) {
+
+                html = `
+            <p>
+                No new likes yet ❤️
+            </p>
+        `;
+            }
+
+            document.getElementById("likesReceived").innerHTML = html;
+        }
+
+        async function likeBack(userId) {
+
+            const response = await fetch(`/api/like/${userId}/`, {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const data = await response.json();
+
+            console.log("❤️ Like Back Response:", data);
+
+            if (data.matched) {
+
+                alert("❤️ It's a Match!");
+
+            } else {
+
+                alert("❤️ Like sent!");
+
+            }
+
+            loadLikesReceived();
+        }
+
+        function passLike(likeId) {
+
+            alert("❌ Pass feature next step mein add karenge.");
+
+        }
+
+        async function loadMatches() {
+
+            const response = await fetch("/api/matches/", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            if (!response.ok) {
+                console.log("Cannot load matches:", response.status);
+                return;
+            }
+
+            const matches = await response.json();
+
+            console.log("💕 Matches:", matches);
+
+            let html = "";
+
+            matches.forEach(match => {
+
+                const user = match.user;
+
+                html += `
+            <div style="
+                border:2px solid #ff4d6d;
+                padding:15px;
+                margin:10px;
+                border-radius:15px;
+                width:300px;
+            ">
+
+                <img
+                    src="${user.profile_picture || ''}"
+                    width="100"
+                    height="100"
+                    style="
+                        border-radius:50%;
+                        object-fit:cover;
+                    "
+                >
+
+                <h3>💕 You matched with ${user.username}!</h3>
+
+                <p>${user.city}</p>
+
+                <button onclick="window.location='/api/chat/?user=${user.id}'">
+                    💬 Chat
+                </button>
+
+                <button onclick="unmatch(${match.match_id})">
+                    💔 Unmatch
+                </button>
+
+            </div>
+        `;
+            });
+
+            if (matches.length === 0) {
+
+                html = `
+            <p>No matches yet. Keep discovering! ❤️</p>
+        `;
+            }
+
+            document.getElementById("matchesList").innerHTML = html;
+        }
+
+        async function unmatch(matchId) {
+
+            const confirmUnmatch = confirm(
+                "Are you sure you want to unmatch?"
+            );
+
+            if (!confirmUnmatch) {
+                return;
+            }
+
+            const response = await fetch(
+                `/api/unmatch/${matchId}/`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+
+                alert("💔 Unmatched successfully");
+
+                loadMatches();
+                loadLikesReceived();
+
+            } else {
+
+                alert(data.error || "Unmatch failed");
+
+            }
         }
 
     </script>
